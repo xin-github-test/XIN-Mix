@@ -1,0 +1,25 @@
+#配置该服务的端口
+server:
+  port: 8000
+
+#Nacos的相关配置
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848   #配上自己的nacos服务地址，注意和自己的cloud版本对应
+  application:
+    name: xmix_manager  # 服务的名字
+
+  # 数据库的设置
+  datasource:
+    url: jdbc:mysql://192.168.133.132:3306/xmix_manager  #设置数据库的连接
+    #注意需要引入mysql的驱动依赖
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml #设置mapper映射文件的位置
+
+
+
