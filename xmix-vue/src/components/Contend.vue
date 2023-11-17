@@ -4,10 +4,7 @@
 
 <script>
 export default {
-  name: "RoleManager"
+  name: "Contend"
 }
 </script>
 
-<style scoped>
-
-</style>
