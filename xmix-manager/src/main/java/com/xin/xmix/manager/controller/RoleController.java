@@ -1,44 +1,120 @@
 package com.xin.xmix.manager.controller;
 
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xin.xmix.common.exception.ExportFailedException;
 import com.xin.xmix.common.utils.R;
+
 import com.xin.xmix.manager.entity.Role;
 import com.xin.xmix.manager.service.RoleService;
+import com.xin.xmix.manager.vo.RoleLoginVo;
+
+
 import com.xin.xmix.manager.vo.RoleVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.IOException;
+
 
 @RestController
 @RequestMapping("/role")
 public class RoleController {
-
-    @Autowired
-    private RoleService roleService;
-
+    
+    private final RoleService roleService;
+    //构造注入
+    RoleController(RoleService roleService){
+        this.roleService = roleService;
+    }
+    /**
+     * 注册接口  测试成功
+     * @param roleLoginVo :账号和密码
+     * @param result :JSR后端校验
+     * @return R
+     */
+    //TODO 注册和登陆需要捋顺逻辑
+    @PostMapping("/register")
+    public R Register(@Valid @RequestBody RoleLoginVo roleLoginVo, BindingResult result){
+        RoleLoginVo roleInfo = roleService.Register(roleLoginVo);
+        return R.ok().put("roleInfo",roleInfo);
+    }
     /**
      * 登陆接口  测试成功
-     * @param roleVo
-     * @param errors：JSR后端校验
-     * @return
+     * @param roleLoginVo :账号和密码
+     * @param result :JSR后端校验
+     * @return R
      */
-    //TODO 2.准备编写管理界面，以及Vue中登陆的请求的实现
-    //继续测试，忘了以debug运行，RoleVo的设置
     @PostMapping("/login")
-    public R Login(@Valid @RequestBody RoleVo roleVo, BindingResult errors){
-        System.out.println("暂停");
-        if(errors.hasErrors()){
-            Map<String, String> collect = errors.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
-            return R.error(301,"登陆失败！").put("errors",collect);
-        }
-        boolean res = roleService.Login(roleVo);
-        if(res) return R.ok();
-        return R.error(302,"账号或密码不正确！");
+    public R Login(@Valid @RequestBody RoleLoginVo roleLoginVo, BindingResult result){
+        RoleLoginVo roleInfo = roleService.Login(roleLoginVo);
+        return R.ok().put("roleInfo",roleInfo);
     }
 
+    /**
+     * 分页数据 接口测试成功
+     * @param pageNum ：当前页
+     * @param pageSize：一页大小
+     * @param searchItem：搜索项
+     * @return ：R
+     */
+    @GetMapping("/page")
+    public R findPage(@RequestParam Integer pageNum,
+                      @RequestParam Integer pageSize,
+                      @RequestParam(defaultValue = "") String searchItem){
+        QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
+        if(!"".equals(searchItem)){
+            //搜索条件的拼接
+            queryWrapper.like("username",searchItem).or()
+                        .like("nickname",searchItem);
+        }
+        Page<Role> page = roleService.page(new Page<>(pageNum, pageSize), queryWrapper);
+        return R.ok().put("data",page);
+    }
+
+    /**
+     * 更新用户信息 测试成功
+     * @param roleVo：最新的用户信息
+     * @return R
+     */
+    @PostMapping("/update")
+    public R updateUser(@RequestBody RoleVo roleVo){
+        roleService.updateUser(roleVo);
+        return R.ok();
+    }
+
+    /**
+     * 删除用户 测试成功
+     * @param id ：用户id
+     * @return R
+     */
+    @DeleteMapping("/delete/{id}")
+    public R deleteUser(@PathVariable("id") Integer id){
+        roleService.deleteUser(id);
+        return R.ok();
+    }
+
+    /**
+     * 批量删除 测试成功
+     * @param ids：需要的删除的用户的id
+     * @return R
+     */
+    @DeleteMapping("/batch/delete")
+    public R batchDeleteUser(@RequestParam("ids") String ids){
+        roleService.batchDeleteUserByIds(ids);
+        return R.ok();
+    }
+
+    @GetMapping("/export")
+    public R exportData(HttpServletResponse response){
+        try {
+            roleService.exportAll(response);
+            return R.ok();
+        } catch (IOException e) {
+            throw new ExportFailedException();
+        }
+    }
 
 }

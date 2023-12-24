@@ -2,7 +2,7 @@
   <div class="wrapper">
     <div class="container container-show" >
 <!--    登陆页面-->
-      <div class="login-box" :class="{'animate_login':isActive}">
+      <div class="login-box" @click="resetError" :class="{'animate_login':isActive}">
         <div class="apple-btn login-apple">
           <li class="red-btn"></li>
           <li class="yellow-btn"></li>
@@ -10,6 +10,8 @@
         </div>
       <div class="title">XMIX-Login</div>
       <div class="input">
+        <span class="errInfo" v-if="errorInfo === ''"></span>
+        <span class="errInfo" v-else>{{ errorInfo }}</span>
         <input type="text"  id="login-user" v-model="dataForm.username" placeholder="Input your username">
       </div>
       <div class="input">
@@ -18,7 +20,7 @@
       <div class="btn login-btn" @click="login">
         <span>登录</span>
       </div>
-      <div class="login-change change-box" v-if="dataForm.username?false:true">
+      <div class="login-change change-box" :style="dataForm.username || dataForm.password?{'height': '0px'}:{}">
         <div class="change-btn" @click="swichSignOrLogin">
           <span>去注册</span>
         </div>
@@ -33,15 +35,17 @@
         </div>
         <div class="title">XMIX-Sign</div>
         <div class="input">
+          <span class="errInfo" v-show="errorInfo === ''"></span>
+          <span class="errInfo" v-show="errorInfo != ''">{{errorInfo}}</span>
           <input type="text" id="sign-user" v-model="dataForm.username" placeholder="Have A Good Name?">
         </div>
         <div class="input">
           <input type="password" id="sign-password" v-model="dataForm.password" placeholder="Keep Secret">
         </div>
-        <div class="btn sign-btn">
+        <div class="btn sign-btn" @click="registerUser">
           <span>注册</span>
         </div>
-        <div class="change-box sign-change" v-if="dataForm.username?false:true">
+        <div class="change-box sign-change" :style="dataForm.username || dataForm.password?{'height': '0px'}:{}">
           <div class="change-btn toLogin" @click="swichSignOrLogin">
             <span>去登陆</span>
           </div>
@@ -51,10 +55,13 @@
   </div>
 </template>
 <script>
+//TODO 后续需要在前端加上用户名和密码的校验，错误信息的显示框已经做好
 export default {
   name: "Login",
   data() {
     return{
+      //错误信息
+      errorInfo:'',
       //表单数据
       dataForm:{
         username:'',
@@ -66,15 +73,51 @@ export default {
     }
   },
   methods: {
+    resetError(){
+      this.errorInfo = ''
+    },
     //登陆与注册之间的切换
     swichSignOrLogin(){
+      this.resetError()
       this.isActive = !this.isActive
     },
+    //登陆操作
     login(){
-      //登陆操作
-      this.request.post("url",this.dataForm).then(
-          res => {
-            console.log(res)
+      //重置错误
+      this.resetError()
+      //axios登陆
+      this.request.post("/manager/role/login",this.dataForm).then(
+          data => {
+            //登陆成功之后需要将返回的数据进行存储以及页面的跳转
+            if(data.code === 200){
+              //1.将数据存入localStorage中
+              localStorage.setItem("roleInfo",JSON.stringify(data.roleInfo))
+              this.$router.push("/")
+            }
+          },
+          err => {
+            console.log(err)
+            this.$message.error("请求失败！")
+          }
+      )
+    },
+    //注册操作
+    registerUser(){
+      //重置错误信息
+      this.resetError()
+      //axios注册
+      this.request.post("/manager/role/register",this.dataForm).then(
+          data => {
+            if(data.code === 200){
+              //注册成功
+              //1.将数据存入localStorage中，暂时就不设置过期时间
+              localStorage.setItem("roleInfo",JSON.stringify(data.roleInfo))
+              this.$router.push("/")
+            }
+          },
+          err => {
+            console.log(err)
+            this.$message.error("注册失败！")
           }
       )
     },
@@ -82,6 +125,26 @@ export default {
 };
 </script>
 <style scoped>
+/**-----------------------**/
+.errInfo{
+  position: relative;
+  width: 300px;
+  height: 21px;
+  bottom: 5px;   /**5**/
+  left: 14px;
+  color: red;
+  opacity: 0;
+  display: block;
+  transition: 0.4s;
+}
+.container:hover .errInfo{
+  bottom: 15px;
+  opacity: 0.9;
+  transition: .4s;
+
+}
+/**-----------------------**/
+
   .wrapper{
     height: 100vh;
     background-image: linear-gradient(120deg, #487eb0, #fbc531);
@@ -167,7 +230,7 @@ export default {
     width: 400px;
     height: 45px;
     position: relative;
-    margin: 40px auto;
+    margin: 50px auto;
     /* border-radius: 45px;
     overflow: hidden; */
   }

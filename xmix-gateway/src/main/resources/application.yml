@@ -1,0 +1,20 @@
+server:
+  port: 88     #端口
+spring:
+  application:
+    name: xmix-gateway    #应用名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848    #nacos地址
+    #gateway配置
+    gateway:
+      routes:
+        #将"/manager/**"映射到相应的服务
+        - id: manager_route
+          uri: lb://xmix-manager
+          predicates:
+            - Path=/manager/**
+          filters:
+            - RewritePath=/manager/?(?<segment>.*), /$\{segment}
+

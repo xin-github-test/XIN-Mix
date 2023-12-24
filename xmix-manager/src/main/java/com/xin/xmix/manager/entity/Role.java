@@ -3,6 +3,7 @@ package com.xin.xmix.manager.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.text.ParseException;
@@ -14,13 +15,17 @@ public class Role {
     @TableId(type=IdType.AUTO)
     private Integer id;
     private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private String nickname;
     private int privilege;
     private boolean state;
+    private String avatarUrl;
 
     //createTime需要对其的setter方法进行增强
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Date createTime;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)  //该属性只能读，不能修改
     private Date updateTime;
 
     /**

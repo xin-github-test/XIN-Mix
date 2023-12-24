@@ -1,7 +1,11 @@
 #配置该服务的端口
 server:
   port: 8000
-
+files:
+  ip: localhost   #本机Ip,主要用于存储文件（存在本地服务器），若是需要使用第三方存储服务请按需修改
+  port: 8000   #存储文件的服务器的端口
+  upload:
+    path: D:/oldData/JavaProject/XIN-Mix/xmix-manager/src/main/resources/static/
 #Nacos的相关配置
 spring:
   cloud:
@@ -9,7 +13,7 @@ spring:
       discovery:
         server-addr: localhost:8848   #配上自己的nacos服务地址，注意和自己的cloud版本对应
   application:
-    name: xmix_manager  # 服务的名字
+    name: xmix-manager  # 服务的名字
 
   # 数据库的设置
   datasource:

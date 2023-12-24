@@ -4,7 +4,10 @@
 
 <script>
 export default {
-  name: "Contend"
+  name: "Loading"
 }
 </script>
 
+<style scoped>
+
+</style>

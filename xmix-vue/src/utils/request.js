@@ -1,9 +1,10 @@
 import axios from 'axios'
 import {serverIp} from '../../public/config'
 import {serverPort} from '../../public/config'
+import ElementUI from "element-ui";
 
 const request = axios.create({
-    baseURL: `http://${serverIp}:${serverPort}`, //统一给加上url前缀
+    baseURL: `http://${serverIp}:${serverPort}`, //统一给加上url前缀 localhost:8000
     timeout: 5000
 })
 
@@ -18,11 +19,11 @@ request.interceptors.request.use(config => {
 
 //对请求返回的相应进行相应的拦截
 //可以在接口响应后统一处理结果
-/*
 request.interceptors.response.use(
     response => {
+        //取出响应中我们需要的数据 data
         let res = response.data;
-        // 如果是返回的文件
+        // 如果是返回的是二进制数据则直接返回
         if (response.config.responseType === 'blob') {
             return res
         }
@@ -30,9 +31,10 @@ request.interceptors.response.use(
         if (typeof res === 'string') {
             res = res ? JSON.parse(res) : res
         }
-        if(res.code === '401'){
+        //错误码的处理，暂时先这样。后面按需修改
+        if(res.code !== 200){
             ElementUI.Message({
-                message:res.msg,
+                message:"code:"+res.code+" msg:"+res.msg,
                 type:'error'
             })
         }
@@ -40,9 +42,11 @@ request.interceptors.response.use(
     },
     error => {
         console.log('err' + error) // for debug
+        //跳转到404
+        location.href="http://"+serverIp+":8080/404"
         return Promise.reject(error)
     }
 )
-*/
+
 
 export default request;

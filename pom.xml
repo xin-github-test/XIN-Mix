@@ -13,5 +13,7 @@
     <modules>
         <module>xmix-common</module>
         <module>xmix-manager</module>
+        <module>xmix-gateway</module>
+        <module>xmix-blog</module>
     </modules>
 </project>
