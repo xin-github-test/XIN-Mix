@@ -4,11 +4,11 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
-  /*{
+  {
     path: '/test',
     name: 'test',
     component: () => import('@/views/manager/test.vue')
-  },*/
+  },
   //   登录页面以及404页面（全局页面）
   {
     path: '/login',

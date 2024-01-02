@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xin.xmix.blog.dao.SkillInfoDao">
+<!--    定义技能查询的sql,自定义返回类型-->
+    <select id="getSkillInfoByUserId" resultMap="SkillInfoVoResultMap">
+        SELECT category, GROUP_CONCAT(skill_name,":",proficiency ORDER BY proficiency DESC) AS skills
+        FROM `blog_skill_info`
+        WHERE user_id = #{userId}
+        GROUP BY category;
+    </select>
+    <select id="getByUserId" resultType="com.xin.xmix.blog.entity.SkillInfo">
+        select * from blog_skill_info
+    </select>
+<!--    自定义返回结果-->
+    <resultMap id="SkillInfoVoResultMap" type="com.xin.xmix.blog.config.SkillInfoResult">
+        <result column="category" property="category"></result>
+        <result column="skills" property="skills"></result>
+    </resultMap>
+</mapper>

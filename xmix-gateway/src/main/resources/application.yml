@@ -17,4 +17,10 @@ spring:
             - Path=/manager/**
           filters:
             - RewritePath=/manager/?(?<segment>.*), /$\{segment}
-
+        #将"/personalblog/**"映射到相应的服务
+        - id: blog_route
+          uri: lb://xmix-blog
+          predicates:
+            - Path=/blog/**
+          filters:
+            - RewritePath=/blog/?(?<segment>.*), /$\{segment}

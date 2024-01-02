@@ -5,7 +5,6 @@ package com.xin.xmix.common.exception;
  * 1.错误码的长度规定为 5 位；
  * 2.错误的前俩位表示业务的场景，最后三位表示错误码
  * 3.维护错误码后需要维护错误描述，将他们定义为枚举类
- *
  * 错误码列表：
  * 00：表示系统未知异常
  * 10：manager服务的异常
@@ -25,10 +24,11 @@ public enum BizCodeEnum {
     MANAGER_FILE_UPLOAD_FAILED(10701,"文件上传失败！"),
     MANAGER_FILE_DOWNLOAD_FAILED(10702,"文件下载失败！"),
     BLOG_FEIGN_CALL_FAILED(30003,"Feign远程调用失败！"),
-    BLOG_PDFBOX_LOAD_FAILED(40001,"PDFBox加载pdf失败！");
+    BLOG_PDFBOX_LOAD_FAILED(40001,"PDFBox加载pdf失败！"),
+    BLOG_GET_INFO_FAILED(400601,"获取用户数据失败！");
 
-    private int code;
-    private String msg;
+    private final int code;
+    private final String msg;
 
     BizCodeEnum(int code,String msg){
         this.code = code;

@@ -20,7 +20,8 @@ public class RoleLoginVo implements Serializable {
 
     private String nickname = null;
 
-
+    private String avatarUrl;
+    private Boolean hasBlog;
     private int privilege = 1;
     private boolean state = true;
 

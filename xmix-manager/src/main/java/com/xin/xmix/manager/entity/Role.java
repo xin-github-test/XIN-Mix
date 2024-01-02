@@ -21,6 +21,7 @@ public class Role {
     private int privilege;
     private boolean state;
     private String avatarUrl;
+    private Boolean hasBlog;
 
     //createTime需要对其的setter方法进行增强
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

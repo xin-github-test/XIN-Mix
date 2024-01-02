@@ -6,6 +6,7 @@ import com.xin.xmix.manager.vo.RoleVo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 public interface RoleFileService extends IService<RoleFile> {

@@ -15,9 +15,19 @@ spring:
     name: xmix-blog
   #引入mybatis之后需要对数据库进行配置
   datasource:
-    url: jdbc:mysql://192.168.133.132:3306/xmix_manager  #此处需要改成该服务操作的数据库
+    url: jdbc:mysql://192.168.133.132:3306/xmix_blog  #此处需要改成该服务操作的数据库
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
 mybatis-plus:
-  mapper-locations: classpath:/mapper/**/*.xml #设置mapper映射文件的位置
+  mapper-locations: classpath:/mapper/blog/*.xml #设置mapper映射文件的位置
+
+logging:
+  level:
+    com.xin.xmix.blog: debug  #调整指定包下的日志级别
+#线程池的配置
+xmix:
+  thread:
+    core-size: 20
+    max-size: 200
+    keep-alive-time: 10

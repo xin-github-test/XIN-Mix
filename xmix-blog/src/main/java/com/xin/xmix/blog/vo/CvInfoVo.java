@@ -6,5 +6,4 @@ import lombok.Data;
 public class CvInfoVo {
     private String name;
     private Integer pageNum;
-    private String url;
 }

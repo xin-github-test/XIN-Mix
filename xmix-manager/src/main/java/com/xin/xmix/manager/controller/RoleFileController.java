@@ -1,5 +1,6 @@
 package com.xin.xmix.manager.controller;
 
+import com.xin.xmix.common.exception.FileDownloadFailedException;
 import com.xin.xmix.common.utils.R;
 import com.xin.xmix.manager.entity.RoleFile;
 import com.xin.xmix.manager.service.RoleFileService;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 

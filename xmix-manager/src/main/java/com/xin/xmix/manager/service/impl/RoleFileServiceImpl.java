@@ -1,6 +1,7 @@
 package com.xin.xmix.manager.service.impl;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -20,9 +21,13 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 public class RoleFileServiceImpl extends ServiceImpl<RoleFileDao, RoleFile> implements RoleFileService {
@@ -32,6 +37,10 @@ public class RoleFileServiceImpl extends ServiceImpl<RoleFileDao, RoleFile> impl
     private String serverPort;
     @Value("${files.upload.path}")
     private String prexPath;
+    private final ThreadPoolExecutor executor;
+    RoleFileServiceImpl(ThreadPoolExecutor executor){
+        this.executor = executor;
+    }
     @Transactional
     @Override
     public String upload(MultipartFile file,Integer roleId) {
@@ -73,10 +82,16 @@ public class RoleFileServiceImpl extends ServiceImpl<RoleFileDao, RoleFile> impl
                 temRoleFile.setDelete(false);
                 temRoleFile.setEnable(true);
                 temRoleFile.setRoleId(roleId);
-            }else if(new File(uploadPath + roleFile.getName()).delete()){
-                //说明该文件已有，则直接删除原有的文件，保留刚上传的文件
+
+            }else{
+                if(new File(uploadPath + roleFile.getName()).delete()){
+                    //说明该文件已有，则直接删除原有的文件，保留刚上传的文件
+                    System.out.println("文件删除成功！:"+roleFile.getName());
+                }else{
+                    //TODO 若是删除失败，最好记录一下，后面手动删除
+                    System.out.println("文件删除失败！:"+roleFile.getName());
+                }
                 temRoleFile.setId(roleFile.getId());
-                System.out.println("文件："+roleFile.getName()+"删除成功！");
             }
             temRoleFile.setName(uploadFileUUID);
             temRoleFile.setType(type);
@@ -97,19 +112,28 @@ public class RoleFileServiceImpl extends ServiceImpl<RoleFileDao, RoleFile> impl
         String filePath = prexPath + type +"/";
         //1.获取下载的文件对象
         File file = new File(filePath + fileUUID);
+        ServletOutputStream os = null;
         try {
             //2.获取response输出流
-            ServletOutputStream os = response.getOutputStream();
+            os = response.getOutputStream();
             //3.设置输出流的格式
             response.addHeader("Content-Disposition","attachment;filename=" + URLEncoder.encode(fileUUID,"UTF-8"));
 //            response.setContentType("application/octet-stream");
             //4.读取文件上传的字节流
             os.write(FileUtil.readBytes(file));
-            //5.刷新和关闭
-            os.flush();
-            os.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new FileDownloadFailedException();
+        }finally {
+            //5.刷新和关闭
+            try {
+                if(null != os){
+                    os.flush();
+                    os.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 

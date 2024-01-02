@@ -2,6 +2,7 @@ package com.xin.xmix.blog.controller;
 
 import com.xin.xmix.common.exception.BizCodeEnum;
 import com.xin.xmix.common.exception.FeignCallFailedException;
+import com.xin.xmix.common.exception.GetInfoFailedException;
 import com.xin.xmix.common.exception.PdfBoxLoadException;
 import com.xin.xmix.common.utils.R;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -32,5 +33,11 @@ public class BlogGlobalExceptionHandler {
     public R handlePdfBoxLoadException(PdfBoxLoadException e){
         System.out.println(e.getMessage());
         return R.error(BizCodeEnum.BLOG_PDFBOX_LOAD_FAILED.getCode(), BizCodeEnum.BLOG_PDFBOX_LOAD_FAILED.getMsg());
+    }
+
+    @ExceptionHandler(GetInfoFailedException.class)
+    public R handleGetInfoFailedException(GetInfoFailedException e){
+        System.out.println(e.getMessage());
+        return R.error(BizCodeEnum.BLOG_GET_INFO_FAILED.getCode(), BizCodeEnum.BLOG_GET_INFO_FAILED.getMsg());
     }
 }
