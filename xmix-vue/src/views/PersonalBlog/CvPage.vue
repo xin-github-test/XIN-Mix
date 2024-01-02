@@ -128,7 +128,8 @@
               <span class="display-slogan"
                     v-if="!isDisplay"
               >
-                What Doesn't Kill You Will Make You Stronger!
+                什么都没做，就已经
+                <TimeSelf></TimeSelf>
               </span>
           </div>
         </div>
@@ -732,10 +733,11 @@
 <script>
 import pdf from 'vue-pdf'
 import {serverIp, serverPort} from "../../../public/config";
+import TimeSelf from "@/components/TimeSelf.vue";
 export default {
   name: "CvPage",
   components:{
-    pdf
+    pdf,TimeSelf
   },
   created() {
     //1.获取blog的基本信息(若是其它用户登陆了，且自己做了blog后显示用户自己)
@@ -1136,25 +1138,15 @@ li + li{
   height: 100%;
 }
 .display-slogan{
-  width: 80%;
+  width: 100%;
   height: 100%;
-  color: transparent;
-  font-family: "Inter", sans-serif;
-  font-size: 40px;
-  line-height: 130px;
-  font-weight: bold;
-  background: linear-gradient(
-    to right,
-    hsl(340deg,100%,50%),
-    hsl(300deg,100%,50%)
-  );
-  -webkit-background-clip: text;
-  transition: filter 1s;
-  transform: skewX(350deg);
-}
-.display-slogan:hover{
-  filter: hue-rotate(-40deg);
-  transition: 1s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #6c5ecf;
+  font-family: "楷体", sans-serif;
+  font-size: 60px;
 }
 .blog-content .blog-cv-display .display-left .display-left-top .top-footer{
   display: flex;

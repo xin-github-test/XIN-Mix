@@ -12,6 +12,11 @@ const request = axios.create({
 request.interceptors.request.use(config => {
     //将请求参数封装成json
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
+    //带上token
+    const token =localStorage.getItem("roleInfo")?JSON.parse(localStorage.getItem("roleInfo")).token:null
+    if(token){
+        config.headers['token'] = token
+    }
     return config
 }, error => {
     return Promise.reject(error)
@@ -32,6 +37,11 @@ request.interceptors.response.use(
             res = res ? JSON.parse(res) : res
         }
         //错误码的处理，暂时先这样。后面按需修改
+        if(res.code === 400){
+            localStorage.removeItem("roleInfo")
+            alert("code:"+res.code+" msg:"+res.msg)
+            location.href="http://"+serverIp+":8080/login"
+        }
         if(res.code !== 200){
             ElementUI.Message({
                 message:"code:"+res.code+" msg:"+res.msg,

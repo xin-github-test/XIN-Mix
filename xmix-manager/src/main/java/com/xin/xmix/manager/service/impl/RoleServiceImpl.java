@@ -1,14 +1,15 @@
 package com.xin.xmix.manager.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xin.xmix.common.exception.*;
 import com.xin.xmix.manager.dao.RoleDao;
 import com.xin.xmix.manager.entity.Role;
-import com.xin.xmix.manager.entity.RoleFile;
-import com.xin.xmix.manager.service.RoleFileService;
 import com.xin.xmix.manager.service.RoleService;
 import com.xin.xmix.manager.vo.RoleLoginVo;
 import com.xin.xmix.manager.vo.RoleVo;
@@ -30,10 +31,7 @@ import java.util.stream.Collectors;
 @Service("RoleService")
 public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleService {
 
-    private final RoleFileService roleFileService;
-    RoleServiceImpl(RoleFileService roleFileService){
-        this.roleFileService = roleFileService;
-    }
+
     /**
      * 注册
      * @param roleLoginVo：用户提交的信息
@@ -57,6 +55,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
         role.setCreateTime(simpleDateFormat.format(new Date()));
         if(saveOrUpdate(role)) {
             BeanUtils.copyProperties(role,roleLoginVo);
+            //设置token
+            roleLoginVo.setToken(getTokenByRoleIdAndPwd(role.getId(), role.getPassword()));
             return roleLoginVo;
         }
         throw new AcountRepeatException();
@@ -68,19 +68,36 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
      */
     @Override
     public RoleLoginVo Login(RoleLoginVo roleLoginVo) {
-        if(roleLoginVo != null && roleLoginVo.isState()){
+        if(null != roleLoginVo && roleLoginVo.isState()){
             String username = roleLoginVo.getUsername();
             String password = roleLoginVo.getPassword();
             Role roleByName = getRoleByName(username);
+            if(null == roleByName){
+                throw new NoSuchUserException();
+            }
             RoleLoginVo roleInfo = new RoleLoginVo();
             String password1 = roleByName.getPassword();
             if(password.equals(password1)){
                 //密码正确
                 BeanUtils.copyProperties(roleByName,roleInfo);
+                //设置token
+                roleInfo.setToken(getTokenByRoleIdAndPwd(roleByName.getId(),roleByName.getPassword()));
                 return roleInfo;
             }
         }
         throw new LoginNoPassException();
+    }
+
+    /**
+     * 通过roleId和密码生成token
+     * @param roleId  roleId
+     * @param password password
+     * @return token
+     */
+    private String getTokenByRoleIdAndPwd(Integer roleId,String password){
+        return JWT.create().withAudience(roleId.toString())  //将roleId作为载荷
+                .withExpiresAt(DateUtil.offsetHour(new Date(),2))  //2小时过期
+                .sign(Algorithm.HMAC256(password));  //用pwd作为密钥
     }
 
     /**
@@ -137,8 +154,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
         } catch (Exception e) {
             throw new ExportFailedException();
         } finally {
-            out.close();
-            writer.close();
+            if(null != out){
+                out.close();
+            }
+            if(null != writer){
+                writer.close();
+            }
         }
     }
 

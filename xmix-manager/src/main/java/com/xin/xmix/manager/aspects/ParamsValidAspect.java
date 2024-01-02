@@ -13,6 +13,9 @@ import org.springframework.validation.BindingResult;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * 参数校验
+ */
 @Aspect
 @Component
 @Slf4j

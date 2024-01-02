@@ -25,7 +25,10 @@ public enum BizCodeEnum {
     MANAGER_FILE_DOWNLOAD_FAILED(10702,"文件下载失败！"),
     BLOG_FEIGN_CALL_FAILED(30003,"Feign远程调用失败！"),
     BLOG_PDFBOX_LOAD_FAILED(40001,"PDFBox加载pdf失败！"),
-    BLOG_GET_INFO_FAILED(400601,"获取用户数据失败！");
+    BLOG_GET_INFO_FAILED(40601,"获取用户数据失败！"),
+    TOKEN_VERIFICATION_FAILED(400,"token校验不通过，请重新登陆！"),
+    NO_SUCH_USER(10303,"没有该用户！"),
+    PERMISSION_DENIED(20001,"权限不足！");
 
     private final int code;
     private final String msg;

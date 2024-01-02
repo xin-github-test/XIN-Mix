@@ -3,7 +3,6 @@ package com.xin.xmix.manager.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.xin.xmix.manager.entity.Role;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -22,6 +21,7 @@ public class RoleLoginVo implements Serializable {
 
     private String avatarUrl;
     private Boolean hasBlog;
+    private String token;
     private int privilege = 1;
     private boolean state = true;
 

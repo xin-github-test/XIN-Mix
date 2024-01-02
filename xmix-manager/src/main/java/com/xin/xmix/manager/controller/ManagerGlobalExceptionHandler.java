@@ -12,6 +12,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ManagerGlobalExceptionHandler {
     /**
+     * 处理token验证失败的异常
+     * @param e 异常信息
+     * @return R
+     */
+    @ExceptionHandler(TokenVerificationFailedException.class)
+    public R handleTokenVerificationFailedException(TokenVerificationFailedException e){
+        System.out.println(e.getMessage());
+        return R.error(BizCodeEnum.TOKEN_VERIFICATION_FAILED.getCode(), BizCodeEnum.TOKEN_VERIFICATION_FAILED.getMsg());
+    }
+    /**
      * 处理LoginOrRegParamInvalidException异常
      * @param e ：异常类
      * @return ： R 全局统一返回
@@ -82,7 +92,7 @@ public class ManagerGlobalExceptionHandler {
      */
     @ExceptionHandler(GetInfoFailedException.class)
     public R handleGetInfoFailedException(GetInfoFailedException e){
-        System.out.println(e);
+        System.out.println(e.getMessage());
         return R.error(BizCodeEnum.MANAGER_GET_INFO_FAILED.getCode(), BizCodeEnum.MANAGER_GET_INFO_FAILED.getMsg());
     }
 
@@ -93,7 +103,18 @@ public class ManagerGlobalExceptionHandler {
      */
     @ExceptionHandler(FileUploadFailedException.class)
     public R handleFileUploadFailedException(FileUploadFailedException e){
-        System.out.println(e);
+        System.out.println(e.getMessage());
         return R.error(BizCodeEnum.MANAGER_FILE_UPLOAD_FAILED.getCode(), BizCodeEnum.MANAGER_FILE_UPLOAD_FAILED.getMsg());
+    }
+    @ExceptionHandler(NoSuchUserException.class)
+    public R handleNoSuchUserException(NoSuchUserException e){
+        System.out.println(e.getMessage());
+        return R.error(BizCodeEnum.NO_SUCH_USER.getCode(), BizCodeEnum.NO_SUCH_USER.getMsg());
+    }
+
+    @ExceptionHandler(PermissionDeniedException.class)
+    public R handlePermissionDeniedException(PermissionDeniedException e){
+        System.out.println(e.getMessage());
+        return R.error(BizCodeEnum.PERMISSION_DENIED.getCode(), BizCodeEnum.PERMISSION_DENIED.getMsg());
     }
 }
